@@ -51,51 +51,71 @@ public class Storage {
 	}
 
 	public void addClientSession(String user, Connection connection) {
-
-		// TODO: add corresponding client session to the storage
-		// See ClientSession class
 		
-		throw new UnsupportedOperationException(TODO.method());
-		
+		//if clients does not exist, we create a new client session 
+		if(!clients.containsKey(user)) {
+			ClientSession clientSession = new ClientSession(user, connection);
+			clients.put(user, clientSession);
+			
+		}		
 	}
 
 	public void removeClientSession(String user) {
 
-		// TODO: disconnet the client (user) 
-		// and remove client session for user from the storage
-		
-		throw new UnsupportedOperationException(TODO.method());
+		//if the client exists, we delete the client session
+		if(clients.containsKey(user)) {
+			clients.remove(user);
+		}
 		
 	}
 
 	public void createTopic(String topic) {
 
-		// TODO: create topic in the storage
-
-		throw new UnsupportedOperationException(TODO.method());
-	
+		//if the topic does not exist, creates a new set of subscribers, 
+		//and maps the topic and subscribers 
+		if(!subscriptions.containsKey(topic)) {
+			 
+			Set<String> subscribers = ConcurrentHashMap.newKeySet();
+			subscriptions.put(topic, subscribers);
+		}
+		
+		
 	}
 
 	public void deleteTopic(String topic) {
 
-		// TODO: delete topic from the storage
+		//deletes a topic if it exists
+		if(subscriptions.containsKey(topic)) {
+			subscriptions.remove(topic);
+		}
 
-		throw new UnsupportedOperationException(TODO.method());
+		
 		
 	}
 
 	public void addSubscriber(String user, String topic) {
-
-		// TODO: add the user as subscriber to the topic
 		
-		throw new UnsupportedOperationException(TODO.method());
+		//gets the current subscribers, ads a new user, 
+		//and replace the existing topic with a updated one
+		Set<String> currentSubscribers = getSubscribers(topic);
 		
+		currentSubscribers.add(user);
+		
+		subscriptions.replace(topic, currentSubscribers);
+			
 	}
 
 	public void removeSubscriber(String user, String topic) {
 
-		// TODO: remove the user as subscriber to the topic
+		//gets current subscribers, if the user is subscribed we remove it
+		//and replace the existing topic with a updated one
+		Set<String> currentSubscribers = getSubscribers(topic);
+		 
+		if(currentSubscribers.contains(user)) {
+			currentSubscribers.remove(user);
+		}
+		
+		subscriptions.replace(topic, currentSubscribers);
 
-		throw new UnsupportedOperationException(TODO.method());
 	}
 }
